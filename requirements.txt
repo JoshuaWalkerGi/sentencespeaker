@@ -1,0 +1,6 @@
+flask>=2.0
+openai
+pydub
+imageio-ffmpeg
+python-dotenv
+gunicorn

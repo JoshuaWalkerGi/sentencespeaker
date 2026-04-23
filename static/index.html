@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SentenceSpeaker</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SentenceSpeaker">
+  <meta name="theme-color" content="#4F46E5">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>SentenceSpeaker</h1>
+      <div id="server-status" class="server-status hidden">Waking up server…</div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="input-row">
+          <textarea id="sentence-input" placeholder="Type a sentence…" rows="2"></textarea>
+          <button id="add-btn">Add</button>
+        </div>
+      </section>
+
+      <section class="card sentences-card">
+        <ul id="sentence-list"></ul>
+        <p id="empty-msg" class="empty-msg">No sentences yet — add some above.</p>
+      </section>
+
+      <section class="card settings-card">
+        <h2 class="section-label">Settings</h2>
+        <div class="setting">
+          <label for="repetitions">Repetitions per sentence</label>
+          <input type="number" id="repetitions" value="5" min="1" max="20">
+        </div>
+        <div class="setting">
+          <label for="pause-per-word">Pause per word (seconds)</label>
+          <input type="number" id="pause-per-word" value="2" min="0" max="10" step="0.5">
+        </div>
+        <div class="setting">
+          <label for="voice">Voice</label>
+          <select id="voice">
+            <option value="nova">Nova</option>
+            <option value="alloy">Alloy</option>
+            <option value="ash">Ash</option>
+            <option value="echo">Echo</option>
+            <option value="fable">Fable</option>
+            <option value="onyx">Onyx</option>
+            <option value="shimmer">Shimmer</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label for="quality">Quality</label>
+          <select id="quality">
+            <option value="tts-1">Standard (faster)</option>
+            <option value="tts-1-hd">HD (higher quality)</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="generate-section">
+        <button id="generate-btn">Generate Audio File</button>
+        <p id="status" class="status"></p>
+        <audio id="audio-player" controls class="hidden"></audio>
+        <a id="download-link" class="download-link hidden" download="sentences_audio.mp3">
+          ⬇ Download sentences_audio.mp3
+        </a>
+      </section>
+
+      <p class="install-hint">
+        iPhone: tap <strong>Share</strong> → <strong>Add to Home Screen</strong> to install as an app.
+      </p>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

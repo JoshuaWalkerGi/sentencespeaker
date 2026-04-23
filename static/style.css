@@ -1,0 +1,293 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f0f0f5;
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+/* Header */
+header {
+  background: #4F46E5;
+  color: white;
+  padding: 1.1rem 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+header h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.server-status {
+  font-size: 0.8rem;
+  background: rgba(255,255,255,0.2);
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* Layout */
+main {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  overflow: hidden;
+}
+
+/* Add sentence */
+.input-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  padding: 1rem;
+}
+
+.input-row textarea {
+  flex: 1;
+  padding: 0.7rem 0.85rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: none;
+  line-height: 1.45;
+  transition: border-color 0.15s;
+  min-height: 44px;
+}
+
+.input-row textarea:focus {
+  outline: none;
+  border-color: #4F46E5;
+}
+
+#add-btn {
+  padding: 0.7rem 1.1rem;
+  background: #4F46E5;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+#add-btn:active {
+  opacity: 0.8;
+}
+
+/* Sentence list */
+#sentence-list {
+  list-style: none;
+}
+
+#sentence-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f2f2f2;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+#sentence-list li:last-child {
+  border-bottom: none;
+}
+
+.num {
+  color: #bbb;
+  font-size: 0.78rem;
+  min-width: 1.4rem;
+  padding-top: 0.15rem;
+  flex-shrink: 0;
+}
+
+.text {
+  flex: 1;
+  word-break: break-word;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.15rem 0.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.remove-btn:hover, .remove-btn:active {
+  color: #e53935;
+  background: #ffeaea;
+}
+
+.empty-msg {
+  padding: 1.5rem;
+  text-align: center;
+  color: #bbb;
+  font-size: 0.9rem;
+}
+
+/* Settings */
+.settings-card {
+  padding: 1rem;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.75rem;
+}
+
+.setting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #f5f5f5;
+  gap: 1rem;
+}
+
+.setting:last-child {
+  border-bottom: none;
+}
+
+.setting label {
+  font-size: 0.93rem;
+  color: #333;
+}
+
+.setting input,
+.setting select {
+  width: 140px;
+  padding: 0.45rem 0.65rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: white;
+  flex-shrink: 0;
+}
+
+.setting input {
+  text-align: right;
+}
+
+.setting input:focus,
+.setting select:focus {
+  outline: none;
+  border-color: #4F46E5;
+}
+
+/* Generate */
+.generate-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+#generate-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #4F46E5;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 52px;
+  transition: opacity 0.15s;
+}
+
+#generate-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+#generate-btn:not(:disabled):active {
+  opacity: 0.8;
+}
+
+.status {
+  text-align: center;
+  font-size: 0.88rem;
+  color: #666;
+  min-height: 1.2em;
+}
+
+.status.error {
+  color: #c62828;
+}
+
+#audio-player {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.download-link {
+  display: block;
+  text-align: center;
+  padding: 1rem;
+  background: #e8f5e9;
+  color: #2e7d32;
+  text-decoration: none;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.download-link:active {
+  opacity: 0.8;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Install hint */
+.install-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #bbb;
+  padding: 0 0.5rem;
+}
