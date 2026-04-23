@@ -68,6 +68,7 @@ async function generate() {
     pause_per_word: parseFloat(document.getElementById('pause-per-word').value),
     voice: document.getElementById('voice').value,
     model: document.getElementById('quality').value,
+    accent: document.getElementById('accent').value,
   };
 
   try {

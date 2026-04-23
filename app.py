@@ -29,6 +29,15 @@ def generate():
     pause_per_word = float(data.get('pause_per_word', 2.0))
     voice = data.get('voice', 'nova')
     model = data.get('model', 'tts-1')
+    accent = data.get('accent', 'default')
+
+    accent_instructions = {
+        'es-es': 'You are a native Spanish speaker from Spain. Speak with a natural Castilian Spanish accent and pronunciation.',
+        'es-latam': 'You are a native Spanish speaker from Latin America. Speak with a natural Latin American Spanish accent and pronunciation.',
+    }
+    instructions = accent_instructions.get(accent)
+    if instructions:
+        model = 'gpt-4o-mini-tts'
 
     if not sentences:
         return jsonify({'error': 'No sentences provided'}), 400
@@ -44,12 +53,10 @@ def generate():
 
     try:
         for sentence in sentences:
-            response = client.audio.speech.create(
-                model=model,
-                voice=voice,
-                input=sentence,
-                response_format='mp3'
-            )
+            tts_params = dict(model=model, voice=voice, input=sentence, response_format='mp3')
+            if instructions:
+                tts_params['instructions'] = instructions
+            response = client.audio.speech.create(**tts_params)
             mp3_bytes = response.content if hasattr(response, 'content') else response.read()
             segment = AudioSegment.from_mp3(io.BytesIO(mp3_bytes))
             silence_ms = int(len(sentence.split()) * pause_per_word * 1000)
