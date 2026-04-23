@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
-
 app = Flask(__name__, static_folder='static', static_url_path='')
 
 
@@ -39,6 +37,8 @@ def generate():
     if not api_key:
         return jsonify({'error': 'Server is not configured with an OpenAI API key'}), 500
 
+    AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
+
     client = OpenAI(api_key=api_key)
     combined = AudioSegment.empty()
 
@@ -50,7 +50,8 @@ def generate():
                 input=sentence,
                 response_format='mp3'
             )
-            segment = AudioSegment.from_mp3(io.BytesIO(response.content))
+            mp3_bytes = response.content if hasattr(response, 'content') else response.read()
+            segment = AudioSegment.from_mp3(io.BytesIO(mp3_bytes))
             silence_ms = int(len(sentence.split()) * pause_per_word * 1000)
             silence = AudioSegment.silent(duration=max(silence_ms, 0))
             for _ in range(repetitions):
