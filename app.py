@@ -2,6 +2,7 @@ import os
 import io
 import traceback
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from openai import OpenAI
 from pydub import AudioSegment
@@ -14,6 +15,11 @@ app = Flask(__name__, static_folder='static', static_url_path='')
 
 # Set converter once at startup so export() works
 AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
+
+
+def _fetch_tts(client, tts_params):
+    response = client.audio.speech.create(**tts_params)
+    return response.content if hasattr(response, 'content') else response.read()
 
 
 def _mp3_to_segment(mp3_bytes):
@@ -67,12 +73,17 @@ def generate():
     combined = AudioSegment.empty()
 
     try:
+        jobs = []
         for sentence in sentences:
-            tts_params = dict(model=model, voice=voice, input=sentence, response_format='mp3')
+            params = dict(model=model, voice=voice, input=sentence, response_format='mp3')
             if instructions:
-                tts_params['instructions'] = instructions
-            response = client.audio.speech.create(**tts_params)
-            mp3_bytes = response.content if hasattr(response, 'content') else response.read()
+                params['instructions'] = instructions
+            jobs.append((sentence, params))
+
+        with ThreadPoolExecutor(max_workers=min(len(jobs), 5)) as pool:
+            mp3_list = list(pool.map(lambda j: _fetch_tts(client, j[1]), jobs))
+
+        for (sentence, _), mp3_bytes in zip(jobs, mp3_list):
             segment = _mp3_to_segment(mp3_bytes)
             silence_ms = int(len(sentence.split()) * pause_per_word * 1000)
             silence = AudioSegment.silent(duration=max(silence_ms, 0))
