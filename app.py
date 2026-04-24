@@ -93,8 +93,16 @@ def generate():
         print(f"[generate error] {traceback.format_exc()}")
         return jsonify({'error': str(e)}), 500
 
-    buf = io.BytesIO()
-    combined.export(buf, format='mp3')
+    raw_pcm = combined.raw_data
+    proc = subprocess.run(
+        [AudioSegment.converter, '-hide_banner', '-loglevel', 'error',
+         '-f', 's16le', '-ar', str(combined.frame_rate), '-ac', str(combined.channels),
+         '-i', 'pipe:0', '-f', 'mp3', 'pipe:1'],
+        input=raw_pcm, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"ffmpeg encode failed: {proc.stderr.decode(errors='replace')}")
+    buf = io.BytesIO(proc.stdout)
     buf.seek(0)
 
     return send_file(
