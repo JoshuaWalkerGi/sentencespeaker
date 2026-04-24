@@ -79,8 +79,14 @@ async function generate() {
     });
 
     if (!response.ok) {
-      const err = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(err.error || 'Generation failed');
+      let errorMsg;
+      try {
+        const err = await response.json();
+        errorMsg = err.error || 'Generation failed';
+      } catch {
+        errorMsg = `Server error (HTTP ${response.status}) — check Render logs`;
+      }
+      throw new Error(errorMsg);
     }
 
     const blob = await response.blob();

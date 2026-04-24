@@ -1,5 +1,7 @@
 import os
 import io
+import traceback
+import subprocess
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from openai import OpenAI
 from pydub import AudioSegment
@@ -9,6 +11,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__, static_folder='static', static_url_path='')
+
+# Set converter once at startup so export() works
+AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
+
+
+def _mp3_to_segment(mp3_bytes):
+    """Decode MP3 bytes via ffmpeg to raw PCM, bypassing pydub's ffprobe dependency."""
+    proc = subprocess.run(
+        [AudioSegment.converter, '-hide_banner', '-loglevel', 'error',
+         '-i', 'pipe:0', '-f', 's16le', '-ac', '1', '-ar', '24000', 'pipe:1'],
+        input=mp3_bytes, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"ffmpeg decode failed: {proc.stderr.decode(errors='replace')}")
+    return AudioSegment(data=proc.stdout, sample_width=2, frame_rate=24000, channels=1)
 
 
 @app.route('/')
@@ -46,8 +63,6 @@ def generate():
     if not api_key:
         return jsonify({'error': 'Server is not configured with an OpenAI API key'}), 500
 
-    AudioSegment.converter = imageio_ffmpeg.get_ffmpeg_exe()
-
     client = OpenAI(api_key=api_key)
     combined = AudioSegment.empty()
 
@@ -58,12 +73,13 @@ def generate():
                 tts_params['instructions'] = instructions
             response = client.audio.speech.create(**tts_params)
             mp3_bytes = response.content if hasattr(response, 'content') else response.read()
-            segment = AudioSegment.from_mp3(io.BytesIO(mp3_bytes))
+            segment = _mp3_to_segment(mp3_bytes)
             silence_ms = int(len(sentence.split()) * pause_per_word * 1000)
             silence = AudioSegment.silent(duration=max(silence_ms, 0))
             for _ in range(repetitions):
                 combined += segment + silence
     except Exception as e:
+        print(f"[generate error] {traceback.format_exc()}")
         return jsonify({'error': str(e)}), 500
 
     buf = io.BytesIO()
